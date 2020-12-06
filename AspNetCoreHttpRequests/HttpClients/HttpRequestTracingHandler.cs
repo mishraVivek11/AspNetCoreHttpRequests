@@ -16,29 +16,29 @@ namespace AspNetCoreHttpRequests.HttpClients
             LogRequest(correlationId,request);
 
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-           
-            LogResponse(correlationId,response);
+
+            LogResponse(correlationId, response);
 
             return response;
         }
 
         private void LogResponse(string correlationId, HttpResponseMessage response)
         {
-            byte[] responseMessage;
+            string responseMessage;
 
             if (response.IsSuccessStatusCode)
-                responseMessage =  response.Content.ReadAsByteArrayAsync().Result;
+                responseMessage =  response.Content.ReadAsStringAsync().Result;
             else
-                responseMessage = System.Text.Encoding.UTF8.GetBytes(response.ReasonPhrase);
+                responseMessage = response.ReasonPhrase;
 
             //Trace
-            var reponseInfo = string.Format("Timestamp:{0}, CorrelationId: {1}, Request {2} : {3}", DateTime.Now, correlationId, response.StatusCode, responseMessage);
+            var reponseInfo = string.Format("Timestamp:{0}, CorrelationId: {1}, Reponse Code: {2},Content: {3}", DateTime.Now, correlationId, response.StatusCode, responseMessage);
         }
 
         private void LogRequest(string correlationId, HttpRequestMessage request)
         {
             //Trace 
-            var requestInfo = string.Format("Timestamp:{0}, CorrelationId: {1}, Request {2} : {3}", DateTime.Now, correlationId, request.Method, request.RequestUri);
+            var requestInfo = string.Format("Timestamp:{0}, CorrelationId: {1}, Request method: {2}, Uri : {3}", DateTime.Now, correlationId, request.Method, request.RequestUri);
         }
     }
 }
